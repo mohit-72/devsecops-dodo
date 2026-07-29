@@ -259,10 +259,12 @@ Invoke-RestMethod -Uri "http://localhost:8081/tokenize" -Method POST -ContentTyp
 Example Response
 
 ```json
+
 {
-    "last4":"4242",
-    "token":"tok_477bba133c182267fe5f0869"
+  "last4": "4242",
+  "token": "<payment-token>"
 }
+
 ```
 
 ---
