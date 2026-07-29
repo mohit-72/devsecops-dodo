@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ledger-api
+  namespace: payments
+  labels:
+    app: ledger-api
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: ledger-api
+
+  template:
+    metadata:
+      labels:
+        app: ledger-api
+
+    spec:
+      serviceAccountName: ledger-sa
+
+      containers:
+        - name: ledger-api
+          image: ledger-api:secure-v2
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ledger-secret
+                  key: STRIPE_API_KEY
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ledger-secret
+                  key: DB_PASSWORD
+
+          envFrom:
+            - configMapRef:
+                name: ledger-config
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            readOnlyRootFilesystem: true
+
+          ports:
+            - containerPort: 8080
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
