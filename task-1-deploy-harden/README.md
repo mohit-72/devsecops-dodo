@@ -288,6 +288,92 @@ The deployment follows Kubernetes security best practices.
 
 ---
 
+# 🔐 Istio Service Mesh & Zero Trust
+
+The application is secured using an Istio Service Mesh implementing Zero Trust networking principles.
+
+## Service Mesh Features
+
+- Istio Service Mesh
+- Automatic Sidecar Injection
+- Mutual TLS (STRICT)
+- Identity-Based Authorization
+- Kubernetes NetworkPolicy
+- Defense-in-Depth Security
+
+---
+
+## Mutual TLS (mTLS)
+
+A PeerAuthentication policy is configured with **STRICT** mode.
+
+```yaml
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+spec:
+  mtls:
+    mode: STRICT
+```
+
+This ensures that all communication between workloads inside the mesh is encrypted using mutual TLS.
+
+---
+
+## Identity-Based Authorization
+
+Authorization is enforced using Istio AuthorizationPolicy.
+
+Instead of trusting IP addresses, communication is allowed only for workloads with the correct Kubernetes Service Account (SPIFFE identity).
+
+---
+
+## Workload Certificates
+
+Istiod automatically:
+
+- Issues X.509 certificates
+- Assigns SPIFFE identities
+- Rotates certificates automatically before expiry
+- Uses the Istio Root CA as the trust root
+
+---
+
+## Defense in Depth
+
+### Istio AuthorizationPolicy
+
+- Identity-based access control
+- Mutual TLS authentication
+- Zero Trust communication
+
+### Kubernetes NetworkPolicy
+
+- Layer 3 / Layer 4 traffic filtering
+- Restricts ingress and egress traffic
+- Provides network isolation between workloads
+
+Both controls work together to provide defense in depth.
+
+---
+
+## Verification
+
+```bash
+kubectl get peerauthentication -n payments
+kubectl get authorizationpolicy -n payments
+kubectl get networkpolicy -n payments
+kubectl get pods -n payments
+```
+
+Expected results:
+
+- PeerAuthentication → **STRICT**
+- AuthorizationPolicy → **ALLOW**
+- NetworkPolicy → Applied
+- Ledger API Pods → **2/2 Running** (Istio sidecar injected)
+
+---
+
 # 📸 Project Screenshots
 
 ## Kubernetes Resources
@@ -360,37 +446,67 @@ The deployment follows Kubernetes security best practices.
 
 ---
 
-# 🎯 Project Outcome
+## Istio Zero Trust
 
-Successfully deployed and secured the Ledger API on Kubernetes using production-inspired DevSecOps practices.
+### Istio Sidecar Injection
 
-Implemented:
-
-- Docker
-- Kubernetes
-- RBAC
-- Secrets
-- ConfigMaps
-- Service Accounts
-- Ingress
-- Health Checks
-- Resource Limits
-- Security Context
-
-The application is fully operational and all Kubernetes resources were successfully validated.
+![](screenshots/12-istio-sidecar.png)
 
 ---
 
+### PeerAuthentication
+
+![](screenshots/13-peerauthentication.png)
+
+---
+
+### AuthorizationPolicy
+
+![](screenshots/14-authorizationpolicy.png)
+
+---
+
+### NetworkPolicy
+
+![](screenshots/15-networkpolicy.png)
+
+# 🎯 Project Outcome
+
+Successfully deployed and secured the Ledger API using production-grade Kubernetes security controls.
+
+Implemented:
+
+- Docker Containerization
+- Kubernetes Deployment
+- Namespace Isolation
+- RBAC
+- Service Accounts
+- Kubernetes Secrets
+- ConfigMaps
+- Security Context
+- Readiness & Liveness Probes
+- Resource Limits
+- Ingress
+- Istio Service Mesh
+- STRICT mTLS
+- Identity-Based AuthorizationPolicy
+- Kubernetes NetworkPolicy
+
+The deployment follows Zero Trust principles by enforcing encrypted service-to-service communication and identity-based authorization while providing defense-in-depth using Kubernetes Network Policies.
+---
+
+
 # 🚀 Future Improvements
 
-- GitHub Actions CI/CD
-- Trivy Image Scanning
-- Checkov Manifest Scanning
+- Istio Ingress Gateway
+- Canary Deployment
+- Horizontal Pod Autoscaler
 - Prometheus Monitoring
 - Grafana Dashboard
-- Helm Chart
-- Horizontal Pod Autoscaler
-- Network Policies
+- Kyverno Policies
+- OPA Gatekeeper
+- External Secrets Operator
+- Service Mesh Observability
 
 ---
 
