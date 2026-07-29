@@ -291,6 +291,20 @@ The pipeline enforces security scanning before deployment and automatically sync
 
 ---
 
+# 📌 Key DevSecOps Practices Demonstrated
+
+- Secure Kubernetes Deployment
+- GitOps with ArgoCD
+- CI/CD Automation using GitHub Actions
+- Secret Management using Kubernetes Secrets
+- RBAC & Least Privilege Access
+- Non-root Containers
+- Readiness & Liveness Probes
+- Resource Requests & Limits
+- Security Scanning with Trivy, Semgrep & Gitleaks
+- Container Image Signing Workflow (Cosign Ready)
+
+
 # 🚀 Future Improvements
 
 - SBOM Generation
